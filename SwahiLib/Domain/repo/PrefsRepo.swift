@@ -80,9 +80,20 @@ class PrefsRepo {
         return Date().timeIntervalSince1970 - lastTime
     }
     
+    func getETag(for endpoint: KamusiEndpoint) -> String? {
+        userDefaults.string(forKey: AppConstants.etagKeyPrefix + endpoint.prefKey)
+    }
+
+    func setETag(_ etag: String, for endpoint: KamusiEndpoint) {
+        userDefaults.set(etag, forKey: AppConstants.etagKeyPrefix + endpoint.prefKey)
+    }
+
     func resetPrefs() {
         installDate = Date()
         isUserAKid = false
         isDataLoaded = false
+        KamusiEndpoint.allCases.forEach {
+            userDefaults.removeObject(forKey: AppConstants.etagKeyPrefix + $0.prefKey)
+        }
     }
 }

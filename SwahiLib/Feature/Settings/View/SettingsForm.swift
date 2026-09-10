@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SettingsForm: View {
-    @ObservedObject var viewModel: MainViewModel
+    @ObservedObject var viewModel: HomeViewModel
     @EnvironmentObject var themeManager: ThemeManager
     @Binding var showPaywall: Bool
     @Binding var showResetAlert: Bool

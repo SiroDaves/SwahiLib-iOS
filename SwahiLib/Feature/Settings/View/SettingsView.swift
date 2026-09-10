@@ -9,7 +9,7 @@ import SwiftUI
 import RevenueCatUI
 
 struct SettingsView: View {
-    @ObservedObject var viewModel: MainViewModel
+    @ObservedObject var viewModel: HomeViewModel
     @EnvironmentObject var themeManager: ThemeManager
     
     @State private var showPaywall: Bool = false

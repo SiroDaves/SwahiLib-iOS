@@ -1,5 +1,5 @@
 //
-//  MainViewModel.swift
+//  HomeViewModel.swift
 //  SwahiLib
 //
 //  Created by @sirodevs on 30/04/2025.
@@ -9,7 +9,7 @@ import Foundation
 import WidgetKit
 import StoreKit
 
-final class MainViewModel: ObservableObject {
+final class HomeViewModel: ObservableObject {
     let prefsRepo: PrefsRepo
     private let idiomRepo: IdiomRepoProtocol
     private let proverbRepo: ProverbRepoProtocol
@@ -17,6 +17,7 @@ final class MainViewModel: ObservableObject {
     private let wordRepo: WordRepoProtocol
     private let subsRepo: SubsRepoProtocol
     private let notifyService: NotificationServiceProtocol
+    private let syncManager: ContentSyncManagerProtocol
     
     @Published var allIdioms: [Idiom] = []
     @Published var likedIdioms: [Idiom] = []
@@ -47,7 +48,8 @@ final class MainViewModel: ObservableObject {
         sayingRepo: SayingRepoProtocol,
         wordRepo: WordRepoProtocol,
         subsRepo: SubsRepoProtocol,
-        notifyService: NotificationServiceProtocol
+        notifyService: NotificationServiceProtocol,
+        syncManager: ContentSyncManagerProtocol
     ) {
         self.prefsRepo = prefsRepo
         self.idiomRepo = idiomRepo
@@ -56,6 +58,7 @@ final class MainViewModel: ObservableObject {
         self.wordRepo = wordRepo
         self.subsRepo = subsRepo
         self.notifyService = notifyService
+        self.syncManager = syncManager
         
         let savedHour = prefsRepo.notificationHour
         let savedMinute = prefsRepo.notificationMinute
@@ -96,6 +99,26 @@ final class MainViewModel: ObservableObject {
             checkForDuplicateIDs()
             self.filterData(qry: "")
             self.uiState = .filtered
+
+            refreshContentInBackground()
+        }
+    }
+
+    private func refreshContentInBackground() {
+        Task { @MainActor in
+            let before = (allIdioms.count, allProverbs.count, allSayings.count, allWords.count)
+
+            await syncManager.syncAll()
+
+            self.allIdioms = idiomRepo.fetchLocalData()
+            self.allProverbs = proverbRepo.fetchLocalData()
+            self.allSayings = sayingRepo.fetchLocalData()
+            self.allWords = wordRepo.fetchLocalData()
+
+            let after = (allIdioms.count, allProverbs.count, allSayings.count, allWords.count)
+            if before != after {
+                self.filterData(qry: "")
+            }
         }
     }
     
@@ -193,7 +216,7 @@ final class MainViewModel: ObservableObject {
             self.idiomRepo.deleteLocalData()
             self.proverbRepo.deleteLocalData()
             self.sayingRepo.deleteLocalData()
-            self.idiomRepo.deleteLocalData()
+            self.wordRepo.deleteLocalData()
             
             prefsRepo.resetPrefs()
             self.uiState = .loaded

@@ -1,5 +1,5 @@
 //
-//  MainView.swift
+//  HomeView.swift
 //  SwahiLib
 //
 //  Created by @sirodevs on 30/04/2025.
@@ -8,9 +8,9 @@
 import SwiftUI
 import RevenueCatUI
 
-struct MainView: View {
-    @StateObject private var viewModel: MainViewModel = {
-        DiContainer.shared.resolve(MainViewModel.self)
+struct HomeView: View {
+    @StateObject private var viewModel: HomeViewModel = {
+        DiContainer.shared.resolve(HomeViewModel.self)
     }()
     
     private enum ActiveSheet: Identifiable {

@@ -23,8 +23,8 @@ struct DependencyMap {
             )
         }.inObjectScope(.container)
         
-        container.register(SupabaseServiceProtocol.self) { _ in
-            SupabaseService()
+        container.register(KamusiApiServiceProtocol.self) { _ in
+            KamusiApiService()
         }.inObjectScope(.container)
 
         container.register(AnalyticsServiceProtocol.self) { _ in
@@ -73,29 +73,40 @@ struct DependencyMap {
         
         container.register(IdiomRepoProtocol.self) { resolver in
             IdiomRepo(
-                supabase: resolver.resolve(SupabaseServiceProtocol.self)!,
+                api: resolver.resolve(KamusiApiServiceProtocol.self)!,
                 idiomData: resolver.resolve(IdiomDataManager.self)!
             )
         }.inObjectScope(.container)
         
         container.register(ProverbRepoProtocol.self) { resolver in
             ProverbRepo(
-                supabase: resolver.resolve(SupabaseServiceProtocol.self)!,
+                api: resolver.resolve(KamusiApiServiceProtocol.self)!,
                 proverbData: resolver.resolve(ProverbDataManager.self)!
             )
         }.inObjectScope(.container)
         
         container.register(SayingRepoProtocol.self) { resolver in
             SayingRepo(
-                supabase: resolver.resolve(SupabaseServiceProtocol.self)!,
+                api: resolver.resolve(KamusiApiServiceProtocol.self)!,
                 sayingData: resolver.resolve(SayingDataManager.self)!
             )
         }.inObjectScope(.container)
         
         container.register(WordRepoProtocol.self) { resolver in
             WordRepo(
-                supabase: resolver.resolve(SupabaseServiceProtocol.self)!,
+                api: resolver.resolve(KamusiApiServiceProtocol.self)!,
                 wordData: resolver.resolve(WordDataManager.self)!
+            )
+        }.inObjectScope(.container)
+        
+        container.register(ContentSyncManagerProtocol.self) { resolver in
+            ContentSyncManager(
+                api: resolver.resolve(KamusiApiServiceProtocol.self)!,
+                prefsRepo: resolver.resolve(PrefsRepo.self)!,
+                idiomRepo: resolver.resolve(IdiomRepoProtocol.self)!,
+                proverbRepo: resolver.resolve(ProverbRepoProtocol.self)!,
+                sayingRepo: resolver.resolve(SayingRepoProtocol.self)!,
+                wordRepo: resolver.resolve(WordRepoProtocol.self)!
             )
         }.inObjectScope(.container)
         
@@ -113,22 +124,20 @@ struct DependencyMap {
         container.register(InitViewModel.self) { resolver in
             InitViewModel(
                 prefsRepo: resolver.resolve(PrefsRepo.self)!,
-                idiomRepo: resolver.resolve(IdiomRepoProtocol.self)!,
-                proverbRepo: resolver.resolve(ProverbRepoProtocol.self)!,
-                sayingRepo: resolver.resolve(SayingRepoProtocol.self)!,
-                wordRepo: resolver.resolve(WordRepoProtocol.self)!
+                syncManager: resolver.resolve(ContentSyncManagerProtocol.self)!
             )
         }.inObjectScope(.container)
         
-        container.register(MainViewModel.self) { resolver in
-            MainViewModel(
+        container.register(HomeViewModel.self) { resolver in
+            HomeViewModel(
                 prefsRepo: resolver.resolve(PrefsRepo.self)!,
                 idiomRepo: resolver.resolve(IdiomRepoProtocol.self)!,
                 proverbRepo: resolver.resolve(ProverbRepoProtocol.self)!,
                 sayingRepo: resolver.resolve(SayingRepoProtocol.self)!,
                 wordRepo: resolver.resolve(WordRepoProtocol.self)!,
                 subsRepo: resolver.resolve(SubsRepoProtocol.self)!,
-                notifyService: resolver.resolve(NotificationServiceProtocol.self)!
+                notifyService: resolver.resolve(NotificationServiceProtocol.self)!,
+                syncManager: resolver.resolve(ContentSyncManagerProtocol.self)!
             )
         }.inObjectScope(.container)
         

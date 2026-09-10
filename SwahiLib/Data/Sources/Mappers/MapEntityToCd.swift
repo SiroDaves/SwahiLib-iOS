@@ -47,6 +47,7 @@ struct MapEntityToCd {
         cd.synonyms = entity.synonyms
         cd.meaning = entity.meaning
         cd.conjugation = entity.conjugation
+        cd.english = entity.english
         cd.views = Int32(entity.views)
         cd.likes = Int32(entity.likes)
         cd.liked = entity.liked

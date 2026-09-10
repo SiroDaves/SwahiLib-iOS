@@ -43,7 +43,7 @@ struct SplashView: View {
             if deepLinked {
                 WordView(deepLinked: true, word: word)
             } else {
-                MainView()
+                HomeView()
             }
         } else {
             InitView()

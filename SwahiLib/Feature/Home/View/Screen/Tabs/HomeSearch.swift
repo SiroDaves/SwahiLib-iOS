@@ -9,7 +9,7 @@ import SwiftUI
 import RevenueCatUI
 
 struct HomeSearch: View {
-    @ObservedObject var viewModel: MainViewModel
+    @ObservedObject var viewModel: HomeViewModel
     @State private var searchText: String = ""
     @State private var selectedLetter: String? = nil
     @State private var isSearching: Bool = true
@@ -99,7 +99,7 @@ struct HomeSearch: View {
 }
 
 struct HomeSearchView: View {
-    @ObservedObject var viewModel: MainViewModel
+    @ObservedObject var viewModel: HomeViewModel
     @Binding var selectedLetter: String?
 
     var body: some View {
