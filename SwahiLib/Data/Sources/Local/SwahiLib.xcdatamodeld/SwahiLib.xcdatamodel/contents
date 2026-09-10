@@ -16,6 +16,15 @@
         <attribute name="updatedAt" optional="YES" attributeType="String"/>
         <attribute name="views" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
     </entity>
+    <entity name="CDLibraryItem" representedClassName="CDLibraryItem" syncable="YES" codeGenerationType="class">
+        <attribute name="collection" optional="YES" attributeType="String"/>
+        <attribute name="detailsJson" optional="YES" attributeType="String"/>
+        <attribute name="groupName" optional="YES" attributeType="String"/>
+        <attribute name="orderIndex" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="primaryText" optional="YES" attributeType="String"/>
+        <attribute name="rid" optional="YES" attributeType="String"/>
+        <attribute name="secondaryText" optional="YES" attributeType="String"/>
+    </entity>
     <entity name="CDProverb" representedClassName="CDProverb" syncable="YES" codeGenerationType="class">
         <attribute name="conjugation" optional="YES" attributeType="String"/>
         <attribute name="createdAt" optional="YES" attributeType="String"/>

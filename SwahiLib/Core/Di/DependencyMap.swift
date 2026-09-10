@@ -71,6 +71,12 @@ struct DependencyMap {
             )
         }.inObjectScope(.container)
         
+        container.register(LibraryDataManager.self) { resolver in
+            LibraryDataManager(
+                coreDataManager: resolver.resolve(CoreDataManager.self)!,
+            )
+        }.inObjectScope(.container)
+        
         container.register(IdiomRepoProtocol.self) { resolver in
             IdiomRepo(
                 api: resolver.resolve(KamusiApiServiceProtocol.self)!,
@@ -99,6 +105,13 @@ struct DependencyMap {
             )
         }.inObjectScope(.container)
         
+        container.register(LibraryRepoProtocol.self) { resolver in
+            LibraryRepo(
+                api: resolver.resolve(KamusiApiServiceProtocol.self)!,
+                libraryData: resolver.resolve(LibraryDataManager.self)!
+            )
+        }.inObjectScope(.container)
+        
         container.register(ContentSyncManagerProtocol.self) { resolver in
             ContentSyncManager(
                 api: resolver.resolve(KamusiApiServiceProtocol.self)!,
@@ -106,7 +119,8 @@ struct DependencyMap {
                 idiomRepo: resolver.resolve(IdiomRepoProtocol.self)!,
                 proverbRepo: resolver.resolve(ProverbRepoProtocol.self)!,
                 sayingRepo: resolver.resolve(SayingRepoProtocol.self)!,
-                wordRepo: resolver.resolve(WordRepoProtocol.self)!
+                wordRepo: resolver.resolve(WordRepoProtocol.self)!,
+                libraryRepo: resolver.resolve(LibraryRepoProtocol.self)!
             )
         }.inObjectScope(.container)
         
@@ -181,6 +195,13 @@ struct DependencyMap {
                 proverbRepo: resolver.resolve(ProverbRepoProtocol.self)!,
                 wordRepo: resolver.resolve(WordRepoProtocol.self)!,
                 subsRepo: resolver.resolve(SubsRepoProtocol.self)!,
+            )
+        }.inObjectScope(.container)
+        
+        container.register(LibraryViewModel.self) { resolver in
+            LibraryViewModel(
+                libraryRepo: resolver.resolve(LibraryRepoProtocol.self)!,
+                syncManager: resolver.resolve(ContentSyncManagerProtocol.self)!
             )
         }.inObjectScope(.container)
         

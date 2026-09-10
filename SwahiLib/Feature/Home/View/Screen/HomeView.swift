@@ -13,6 +13,10 @@ struct HomeView: View {
         DiContainer.shared.resolve(HomeViewModel.self)
     }()
     
+    @StateObject private var libraryViewModel: LibraryViewModel = {
+        DiContainer.shared.resolve(LibraryViewModel.self)
+    }()
+    
     private enum ActiveSheet: Identifiable {
         case parentalGate
         case paywall
@@ -73,6 +77,11 @@ struct HomeView: View {
                     HomeLikes(viewModel: viewModel)
                         .tabItem {
                             Label("Vipendwa", systemImage: "heart.fill")
+                        }
+                    
+                    LibraryCollectionsView(viewModel: libraryViewModel)
+                        .tabItem {
+                            Label("Maktaba", systemImage: "books.vertical.fill")
                         }
                     
                     SettingsView(viewModel: viewModel)
