@@ -3,6 +3,8 @@
 //  SwahiLib
 //
 //  Created by @sirodevs on 30/04/2025.
+//  Updated to delegate content sync to ContentSyncManager (ETag-aware)
+//  instead of calling each repo's fetchRemoteData() directly.
 //
 
 import Foundation
@@ -11,23 +13,14 @@ final class InitViewModel: ObservableObject {
     @Published var uiState: UiState = .idle
 
     private let prefsRepo: PrefsRepo
-    private let idiomRepo: IdiomRepoProtocol
-    private let proverbRepo: ProverbRepoProtocol
-    private let sayingRepo: SayingRepoProtocol
-    private let wordRepo: WordRepoProtocol
+    private let syncManager: ContentSyncManagerProtocol
 
     init(
         prefsRepo: PrefsRepo,
-        idiomRepo: IdiomRepoProtocol,
-        proverbRepo: ProverbRepoProtocol,
-        sayingRepo: SayingRepoProtocol,
-        wordRepo: WordRepoProtocol
+        syncManager: ContentSyncManagerProtocol
     ) {
         self.prefsRepo = prefsRepo
-        self.idiomRepo = idiomRepo
-        self.proverbRepo = proverbRepo
-        self.sayingRepo = sayingRepo
-        self.wordRepo = wordRepo
+        self.syncManager = syncManager
     }
 
     func initializeData() {
@@ -41,24 +34,13 @@ final class InitViewModel: ObservableObject {
             self.uiState = .loading("Inapakia data ...")
         }
 
-        do {
-            try await idiomRepo.fetchRemoteData()
-            try await proverbRepo.fetchRemoteData()
-            try await sayingRepo.fetchRemoteData()
-            try await wordRepo.fetchRemoteData()
+        await syncManager.syncAll()
+        prefsRepo.isDataLoaded = true
 
-            prefsRepo.isDataLoaded = true
-
-            await MainActor.run {
-                self.uiState = .saved
-            }
-
-            print("✅ Data fetched and saved successfully.")
-        } catch {
-            await MainActor.run {
-                self.uiState = .error("Imefeli: \(error.localizedDescription)")
-            }
-            print("❌ Initialization failed: \(error)")
+        await MainActor.run {
+            self.uiState = .saved
         }
+
+        print("✅ Data fetched and saved successfully.")
     }
 }

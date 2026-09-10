@@ -14,6 +14,7 @@ struct Word: Identifiable, Codable, Hashable {
     let synonyms: String
     let meaning: String
     let conjugation: String
+    let english: String
     let views: Int
     let likes: Int
     var liked: Bool

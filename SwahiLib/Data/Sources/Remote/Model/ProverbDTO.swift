@@ -11,8 +11,4 @@ struct ProverbDTO: Codable {
     let synonyms: String?
     let meaning: String?
     let conjugation: String?
-    let views: Int?
-    let likes: Int?
-    let createdAt: String?
-    let updatedAt: String?
 }

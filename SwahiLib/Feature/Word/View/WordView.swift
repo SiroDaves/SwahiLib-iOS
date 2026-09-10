@@ -108,7 +108,7 @@ struct WordView: View {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button {
                     if (deepLinked) {
-                        navigateToNewMainView()
+                        navigateToNewHomeView()
                     } else {
                         dismiss()
                     }
@@ -136,11 +136,11 @@ struct WordView: View {
 
     }
     
-    private func navigateToNewMainView() {
+    private func navigateToNewHomeView() {
             if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                let window = windowScene.windows.first {
-                let mainView = MainView()
-                let hostingController = UIHostingController(rootView: mainView)
+                let HomeView = HomeView()
+                let hostingController = UIHostingController(rootView: HomeView)
                 
                 UIView.transition(with: window,
                                 duration: 0.3,

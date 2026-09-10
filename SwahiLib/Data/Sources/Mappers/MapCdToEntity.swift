@@ -54,6 +54,7 @@ struct MapCdToEntity {
             synonyms: cd.synonyms ?? "",
             meaning: cd.meaning ?? "",
             conjugation: cd.conjugation ?? "",
+            english: cd.english ?? "",
             views: Int(cd.views),
             likes: Int(cd.likes),
             liked: cd.liked,

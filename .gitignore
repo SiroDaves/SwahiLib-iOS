@@ -21,6 +21,8 @@ xcuserdata/
 # Swift Package Manager
 .swiftpm/
 .build/
+*.zip
+.wakatime-project
 Package.resolved
 
 # CocoaPods

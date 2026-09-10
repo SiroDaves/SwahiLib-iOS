@@ -9,8 +9,4 @@ struct SayingDTO: Codable {
     let rid: Int
     let title: String?
     let meaning: String?
-    let views: Int?
-    let likes: Int?
-    let createdAt: String?
-    let updatedAt: String?
 }

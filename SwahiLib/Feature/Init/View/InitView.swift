@@ -18,7 +18,7 @@ struct InitView: View {
     var body: some View {
         Group {
             if navigateToNextScreen {
-                MainView()
+                HomeView()
             } else {
                 mainContent
             }

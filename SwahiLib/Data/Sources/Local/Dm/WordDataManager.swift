@@ -49,6 +49,7 @@ class WordDataManager {
                             newCdWord.meaning = cdWord.meaning
                             newCdWord.synonyms = cdWord.synonyms
                             newCdWord.conjugation = cdWord.conjugation
+                            newCdWord.english = cdWord.english
                             newCdWord.createdAt = cdWord.createdAt
                             newCdWord.updatedAt = cdWord.updatedAt
                         }

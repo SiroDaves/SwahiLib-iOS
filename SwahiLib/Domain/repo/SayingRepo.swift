@@ -3,6 +3,7 @@
 //  SwahiLib
 //
 //  Created by @sirodevs on 02/05/2025.
+//  Updated to fetch from the Kamusi content API instead of Supabase.
 //
 
 import Foundation
@@ -17,57 +18,49 @@ protocol SayingRepoProtocol {
 }
 
 class SayingRepo: SayingRepoProtocol {
-    private let supabase: SupabaseServiceProtocol
+    private let api: KamusiApiServiceProtocol
     private let sayingData: SayingDataManager
-    
-    init(supabase: SupabaseServiceProtocol, sayingData: SayingDataManager) {
-        self.supabase = supabase
+
+    init(api: KamusiApiServiceProtocol, sayingData: SayingDataManager) {
+        self.api = api
         self.sayingData = sayingData
     }
-    
+
     func fetchRemoteData() async throws {
-        do {
-            let sayingDTOs: [SayingDTO] = try await supabase.client
-                .from("sayings")
-                .select()
-                .execute()
-                .value
-            
-            let cdSayings: [CDSaying] = sayingDTOs.map { dto in
-                let cdSaying = CDSaying(context: self.sayingData.bgContext)
-                MapDtoToCd.mapToCd(dto, cdSaying)
-                return cdSaying
-            }
-            
-            print("✅ \(cdSayings.count) sayings fetched")
-            try await sayingData.saveSayings(cdSayings)
-            
-        } catch {
-            print("❌ Failed to fetch sayings: \(error.localizedDescription)")
-            throw error
+        guard let sayingDTOs: [SayingDTO] = await api.fetchJson(.sayings) else {
+            throw KamusiApiError.fetchFailed(.sayings)
         }
+
+        let cdSayings: [CDSaying] = sayingDTOs.map { dto in
+            let cdSaying = CDSaying(context: self.sayingData.bgContext)
+            MapDtoToCd.mapToCd(dto, cdSaying)
+            return cdSaying
+        }
+
+        print("✅ \(cdSayings.count) sayings fetched")
+        try await sayingData.saveSayings(cdSayings)
     }
-    
+
     func fetchLocalData() -> [Saying] {
         let sayings = sayingData.fetchSayings()
         return sayings.sorted { $0.rid < $1.rid }
     }
-    
+
     func saveSaying(_ saying: Saying) {
         sayingData.saveSaying(saying)
     }
-     
+
     func updateSaying(_ saying: Saying) {
         sayingData.updateSaying(saying)
     }
-    
+
     func getSayingsByTitles(titles: [String]) -> [Saying] {
         let sayings = sayingData.getSayingsByTitles(titles: titles)
         return sayings.sorted { $0.rid < $1.rid }
     }
-    
+
     func deleteLocalData() {
         sayingData.deleteAllSayings()
     }
-    
+
 }

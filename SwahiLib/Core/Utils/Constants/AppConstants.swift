@@ -18,6 +18,10 @@ struct AppConstants {
     
     static let wordsRefreshTask = "com.swahilib.wordstask.refresh"
     static let wordsProcessingTask = "com.swahilib.wordstask.processing"
+
+    static let kamusiApiBaseURL = "https://swahilive.vercel.app/"
+    
+    static let etagKeyPrefix = "etagKey_"
 }
 
 struct PrefConstants {

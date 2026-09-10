@@ -9,7 +9,7 @@ import SwiftUI
 import RevenueCatUI
 
 struct HomeLikes: View {
-    @ObservedObject var viewModel: MainViewModel
+    @ObservedObject var viewModel: HomeViewModel
     
     @State private var showPaywall: Bool = false
     

@@ -134,6 +134,7 @@ class WordViewModel: ObservableObject {
             synonyms: word.synonyms,
             meaning: word.meaning,
             conjugation: word.conjugation,
+            english: word.english,
             views: word.views,
             likes: word.likes,
             liked: !word.liked,
