@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		173314E42DC159DB00318DD8 /* Swinject in Frameworks */ = {isa = PBXBuildFile; productRef = 173314E32DC159DB00318DD8 /* Swinject */; };
-		173B62752E0977B200454071 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 173B62742E0977B200454071 /* Lottie */; };
 		173B62782E0977DB00454071 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 173B62772E0977DB00454071 /* Supabase */; };
 		173CEE452E06AA5900DB2FE1 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 173CEE442E06AA5200DB2FE1 /* .gitignore */; };
 		1745C2F02EABBE6C0011EF91 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1745C2992EABB7B30011EF91 /* WidgetKit.framework */; };
@@ -143,7 +142,6 @@
 			files = (
 				17B82D082E59025700C58824 /* RevenueCat in Frameworks */,
 				173314E42DC159DB00318DD8 /* Swinject in Frameworks */,
-				173B62752E0977B200454071 /* Lottie in Frameworks */,
 				17B82D0D2E5909C200C58824 /* RevenueCatUI in Frameworks */,
 				173B62782E0977DB00454071 /* Supabase in Frameworks */,
 			);
@@ -248,7 +246,6 @@
 			name = SwahiLib;
 			packageProductDependencies = (
 				173314E32DC159DB00318DD8 /* Swinject */,
-				173B62742E0977B200454071 /* Lottie */,
 				173B62772E0977DB00454071 /* Supabase */,
 				17B82D072E59025700C58824 /* RevenueCat */,
 				17B82D0C2E5909C200C58824 /* RevenueCatUI */,
@@ -340,7 +337,6 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				1733149D2DC1499100318DD8 /* XCRemoteSwiftPackageReference "Swinject" */,
-				173B62732E09774B00454071 /* XCRemoteSwiftPackageReference "lottie-ios" */,
 				173B62762E0977CB00454071 /* XCRemoteSwiftPackageReference "supabase-swift" */,
 				175222CE2E58CF5100A2AD93 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */,
 			);
@@ -841,14 +837,6 @@
 				minimumVersion = 2.9.1;
 			};
 		};
-		173B62732E09774B00454071 /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/airbnb/lottie-ios.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 4.5.2;
-			};
-		};
 		173B62762E0977CB00454071 /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/supabase/supabase-swift.git";
@@ -872,11 +860,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 1733149D2DC1499100318DD8 /* XCRemoteSwiftPackageReference "Swinject" */;
 			productName = Swinject;
-		};
-		173B62742E0977B200454071 /* Lottie */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 173B62732E09774B00454071 /* XCRemoteSwiftPackageReference "lottie-ios" */;
-			productName = Lottie;
 		};
 		173B62772E0977DB00454071 /* Supabase */ = {
 			isa = XCSwiftPackageProductDependency;
