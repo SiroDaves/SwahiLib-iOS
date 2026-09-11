@@ -15,6 +15,9 @@ struct HomeSearch: View {
     @State private var isSearching: Bool = true
     @State private var showPaywall: Bool = false
     @State private var scrollViewProxy: ScrollViewProxy? = nil
+    @State private var isAtTop: Bool = true
+
+    private let scrollSpace = "homeSearchScroll"
 
     var body: some View {
         NavigationStack {
@@ -25,23 +28,16 @@ struct HomeSearch: View {
                             Color.clear
                                 .frame(height: 0)
                                 .id("top")
-                            
-                            HStack {
-                                SearchBar(
-                                    text: $searchText,
-                                    onSearch: { query in
-                                        viewModel.filterData(qry: query)
-                                    }
-                                )
-                                NavigationLink {
-                                    AdvancedSearch()
-                                } label: {
-                                    Text("TAFUTA KWA KINA")
-                                        .font(.headline)
-                                        .padding(.vertical, 5)
+                                .trackScrollOffset(coordinateSpace: scrollSpace) { offset in
+                                    isAtTop = offset >= -5
                                 }
-                                .buttonStyle(.borderedProminent)
-                            }
+
+                            SearchBar(
+                                text: $searchText,
+                                onSearch: { query in
+                                    viewModel.filterData(qry: query)
+                                }
+                            )
                             .padding(.horizontal, 10)
                             
                             CustomTabTitles(
@@ -70,15 +66,24 @@ struct HomeSearch: View {
                             }
                         }
                     }
+                    .coordinateSpace(name: scrollSpace)
                 }
-                
-                ScrollToTopButton {
-                    withAnimation {
-                        scrollToTop()
+
+                VStack(alignment: .trailing, spacing: 10) {
+                    if !isAtTop {
+                        ScrollToTopButton {
+                            withAnimation {
+                                scrollToTop()
+                            }
+                        }
+                        .transition(.opacity)
                     }
+
+                    AdvancedSearchFAB(expanded: isAtTop)
                 }
+                .animation(.easeInOut(duration: 0.2), value: isAtTop)
                 .padding()
-                
+
                 if !viewModel.isProUser {
                     UpgradeBanner1 { showPaywall = true }
                 }
@@ -88,6 +93,15 @@ struct HomeSearch: View {
             }
             .navigationTitle("SwahiLib")
             .toolbarBackground(.regularMaterial, for: .navigationBar)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    NavigationLink {
+                        HomeLikes(viewModel: viewModel)
+                    } label: {
+                        Image(systemName: "heart.fill")
+                    }
+                }
+            }
         }
     }
     

@@ -36,7 +36,7 @@ struct LibraryDetailView: View {
     @ViewBuilder
     private func content(for config: LibraryConfig) -> some View {
         if items.isEmpty && viewModel.isSyncing {
-            LoadingState(fileName: "circle-loader")
+            LoadingState()
         } else if items.isEmpty {
             EmptyState()
         } else if config.displayMode == .grid {

@@ -37,9 +37,9 @@ struct InitView: View {
     @ViewBuilder
     private var stateContent: some View {
         switch viewModel.uiState {
-        case .loading(_):
+        case .loading(let message):
             LoadingState(
-                fileName: "opener-loading"
+                title: message ?? ""
             )
 
         case .error(let msg):

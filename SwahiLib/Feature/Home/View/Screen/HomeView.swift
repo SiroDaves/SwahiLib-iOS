@@ -63,20 +63,13 @@ struct HomeView: View {
     private var stateContent: some View {
         switch viewModel.uiState {
             case .loading:
-                LoadingState(
-                    fileName: "circle-loader"
-                )
+                HomeSkeleton()
                 
             case .filtered:
                 TabView {
                     HomeSearch(viewModel: viewModel)
                         .tabItem {
                             Label("Tafuta", systemImage: "magnifyingglass")
-                        }
-                    
-                    HomeLikes(viewModel: viewModel)
-                        .tabItem {
-                            Label("Vipendwa", systemImage: "heart.fill")
                         }
                     
                     LibraryCollectionsView(viewModel: libraryViewModel)
@@ -97,9 +90,7 @@ struct HomeView: View {
                 }
                 
             default:
-                LoadingState(
-                    fileName: "circle-loader"
-                )
+                HomeSkeleton()
         }
     }
 }

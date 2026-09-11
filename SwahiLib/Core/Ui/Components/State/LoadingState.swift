@@ -6,21 +6,19 @@
 //
 
 import SwiftUI
-import Lottie
 
 struct LoadingState: View {
     var title: String = ""
-    var fileName: String = "opener-loading"
     var showProgress: Bool = false
     var progressValue: Int = 0
 
     var body: some View {
-        VStack(spacing: 24) {
-            LottieView(name: fileName).frame(width: 300, height: 300)
-
-            Text(title)
-                .font(.system(size: 25, weight: .bold))
-                .foregroundColor(.onPrimaryContainer)
+        VStack(spacing: 16) {
+            if !title.isEmpty {
+                Text(title)
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundColor(.onSurface)
+            }
 
             if showProgress {
                 VStack(spacing: 8) {
@@ -36,17 +34,18 @@ struct LoadingState: View {
                 }
                 .padding(.horizontal)
             }
+
+            ListSkeleton(rowCount: 8)
         }
-        .padding(20)
+        .padding(.top, 20)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .ignoresSafeArea()
+        .ignoresSafeArea(edges: .bottom)
     }
 }
 
 #Preview {
     LoadingState(
         title: "Inapakia data ...",
-        fileName: "opener-loading",
         showProgress: true,
         progressValue: 65,
     )

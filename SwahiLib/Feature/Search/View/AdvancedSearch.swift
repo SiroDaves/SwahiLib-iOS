@@ -27,8 +27,7 @@ struct AdvancedSearch: View {
         switch viewModel.uiState {
         case .loading:
             LoadingState(
-                title: "Inapakia data ...",
-                fileName: "opener-loading"
+                title: "Inapakia data ..."
             )
             
         case .filtered:
@@ -53,8 +52,7 @@ struct AdvancedSearch: View {
             
         default:
             LoadingState(
-                title: "Inapakia data ...",
-                fileName: "circle-loader"
+                title: "Inapakia data ..."
             )
         }
     }
