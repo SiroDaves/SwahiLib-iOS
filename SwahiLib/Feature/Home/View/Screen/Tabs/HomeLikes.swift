@@ -26,6 +26,8 @@ struct HomeLikes: View {
                     .padding(.leading, 10)
 
                     switch viewModel.homeTab {
+                        case .all:
+                            EmptyView()
                         case .idioms:
                             IdiomsList(idioms: viewModel.likedIdioms)
                         case .proverbs:

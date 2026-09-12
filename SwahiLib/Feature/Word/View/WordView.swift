@@ -102,6 +102,7 @@ struct WordView: View {
             synonyms: viewModel.synonyms,
             conjugation: viewModel.conjugation,
             proverbs: viewModel.proverbs,
+            english: viewModel.english,
             onFeatureLocked: { showAlert = true }
         )
         .toolbar {

@@ -4,129 +4,135 @@
 //
 //  Created by @sirodevs on 15/11/2025.
 //
+//  Mirrors Android's AdvancedSearchScreen: search field + sort dropdown,
+//  YOTE/MANENO/NAHAU/METHALI/MISEMO type filter chips, a result count
+//  badge, and all matching sections stacked together (rather than a single
+//  switched list with an alphabet sidebar, which is specific to Home).
+//
 
 import SwiftUI
 
 struct AdvancedSearchView: View {
     @ObservedObject var viewModel: SearchViewModel
     @State private var searchText: String = ""
-    @State private var selectedLetter: String? = nil
-    @State private var isSearching: Bool = true
-    @State private var showAlertDialog = false
-    @State private var showPaywall: Bool = false
     @State private var scrollViewProxy: ScrollViewProxy? = nil
+    @State private var isAtTop: Bool = true
+
+    private let scrollSpace = "advancedSearchScroll"
+
+    private var trimmedQuery: String {
+        searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
 
     var body: some View {
-        NavigationStack {
-            ZStack {
+        VStack(spacing: 0) {
+            HStack(alignment: .center, spacing: 4) {
+                SearchBar(
+                    text: $searchText,
+                    onSearch: { query in viewModel.filterData(qry: query) }
+                )
+                SortDropdown(sortOrder: $viewModel.sortOrder)
+            }
+            .padding(.horizontal, 10)
+
+            TypeFilterRow(selected: $viewModel.homeTab)
+                .padding(.top, 10)
+
+            ResultCountBadge(
+                query: searchText,
+                count: viewModel.totalResults(for: viewModel.homeTab)
+            )
+            .padding(.top, 4)
+
+            ZStack(alignment: .bottomTrailing) {
                 ScrollViewReader { proxy in
                     ScrollView {
-                        VStack(alignment: .leading, spacing: 12) {
+                        LazyVStack(alignment: .leading, spacing: 4) {
                             Color.clear
                                 .frame(height: 0)
                                 .id("top")
-                            
-                            SearchBar(
-                                text: $searchText,
-                                onSearch: { query in
-                                    viewModel.filterData(qry: query)
+                                .trackScrollOffset(coordinateSpace: scrollSpace) { offset in
+                                    isAtTop = offset >= -5
                                 }
-                            )
-                            .padding(.horizontal, 10)
-                            
-                            SearchOptions(
-                                selectedPart: $viewModel.searchPart,
-                                selectedPattern: $viewModel.searchPattern
-                            )
-                            .padding(.horizontal, 10)
-                            .onChange(of: viewModel.searchPart) { _ in
-                                viewModel.filterData(qry: searchText)
-                            }
-                            .onChange(of: viewModel.searchPattern) { _ in
-                                viewModel.filterData(qry: searchText)
-                            }
-                            
-                            CustomTabTitles(
-                                selectedTab: viewModel.homeTab,
-                                onSelect: { homeTab in
-                                    viewModel.homeTab = homeTab
-                                    viewModel.filterData(qry: "")
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                        scrollToTop()
-                                    }
-                                }
-                            )
-                            .padding(.leading, 10)
 
-                            AdvancedSearchBody(
-                                viewModel: viewModel,
-                                selectedLetter: $selectedLetter
-                            )
-                        }
-                        .onAppear {
-                            self.scrollViewProxy = proxy
-                        }
-                    }
-                }
-                
-                VStack {
-                    Spacer()
-                    HStack {
-                        Spacer()
-                        ScrollToTopButton {
-                            withAnimation {
-                                scrollToTop()
+                            if trimmedQuery.isEmpty {
+                                EmptySearchPrompt()
+                            } else {
+                                resultSections
                             }
+
+                            Color.clear.frame(height: 80)
                         }
-                        .padding(.trailing, 20)
-                        .padding(.bottom, 100)
+                        .padding(.top, 8)
                     }
+                    .coordinateSpace(name: scrollSpace)
+                    .onAppear { scrollViewProxy = proxy }
+                }
+
+                if !isAtTop {
+                    ScrollToTopButton {
+                        withAnimation { scrollToTop() }
+                    }
+                    .padding()
+                    .transition(.opacity)
                 }
             }
-            .navigationTitle("Tafuta kwa Kina")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(.regularMaterial, for: .navigationBar)
+        }
+        .navigationTitle("Tafuta kwa Kina")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar(.hidden, for: .tabBar)
+        .toolbarBackground(.regularMaterial, for: .navigationBar)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                SearchModeMenu(searchMode: $viewModel.searchMode)
+            }
+        }
+        .animation(.easeInOut(duration: 0.2), value: isAtTop)
+    }
+
+    @ViewBuilder
+    private var resultSections: some View {
+        let showWords = viewModel.homeTab == .all || viewModel.homeTab == .words
+        let showIdioms = viewModel.homeTab == .all || viewModel.homeTab == .idioms
+        let showProverbs = viewModel.homeTab == .all || viewModel.homeTab == .proverbs
+        let showSayings = viewModel.homeTab == .all || viewModel.homeTab == .sayings
+
+        if showWords {
+            if !viewModel.filteredWords.isEmpty {
+                WordsList(words: viewModel.filteredWords)
+            } else {
+                EmptySection(category: "maneno")
+            }
+        }
+
+        if showIdioms {
+            if !viewModel.filteredIdioms.isEmpty {
+                IdiomsList(idioms: viewModel.filteredIdioms)
+            } else {
+                EmptySection(category: "nahau")
+            }
+        }
+
+        if showProverbs {
+            if !viewModel.filteredProverbs.isEmpty {
+                ProverbsList(proverbs: viewModel.filteredProverbs)
+            } else {
+                EmptySection(category: "methali")
+            }
+        }
+
+        if showSayings {
+            if !viewModel.filteredSayings.isEmpty {
+                SayingsList(sayings: viewModel.filteredSayings)
+            } else {
+                EmptySection(category: "misemo")
+            }
         }
     }
-    
+
     private func scrollToTop() {
         withAnimation(.easeInOut(duration: 0.3)) {
             scrollViewProxy?.scrollTo("top", anchor: .top)
-        }
-    }
-}
-
-struct AdvancedSearchBody: View {
-    @ObservedObject var viewModel: SearchViewModel
-    @Binding var selectedLetter: String?
-
-    var body: some View {
-        HStack(alignment: .top, spacing: 10) {
-            VerticalLetters(
-                selectedLetter: selectedLetter,
-                onLetterSelected: { letter in
-                    selectedLetter = letter
-                    viewModel.filterData(qry: letter)
-                }
-            )
-            .frame(width: 60)
-
-            switch viewModel.homeTab {
-                case .idioms:
-                    IdiomsList(idioms: viewModel.filteredIdioms)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                
-                case .proverbs:
-                    ProverbsList(proverbs: viewModel.filteredProverbs)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                case .sayings:
-                    SayingsList(sayings: viewModel.filteredSayings)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                
-                case .words:
-                    WordsList(words: viewModel.filteredWords)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-            }
         }
     }
 }

@@ -19,6 +19,7 @@ class WordViewModel: ObservableObject {
     @Published var meanings: [String] = []
     @Published var synonyms: [Word] = []
     @Published var proverbs: [Proverb] = []
+    @Published var english: String? = nil
     
     private let netUtils: NetworkUtils
     let prefsRepo: PrefsRepo
@@ -56,6 +57,8 @@ class WordViewModel: ObservableObject {
         isLiked = word.liked
         title = word.title
         conjugation = word.conjugation
+        let trimmedEnglish = word.english.trimmingCharacters(in: .whitespacesAndNewlines)
+        english = trimmedEnglish.isEmpty ? nil : trimmedEnglish
         
         loadRelatedProverbs(word: word)
         

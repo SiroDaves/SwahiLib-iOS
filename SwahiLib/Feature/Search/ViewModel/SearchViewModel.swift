@@ -18,25 +18,31 @@ final class SearchViewModel: ObservableObject {
 
     @Published var showAlertDialog: Bool = false
     @Published var isProUser: Bool = false
-    
-    @Published var searchPart: SearchOptionsParts = .byTitle
-    @Published var searchPattern: SearchOptionsPatterns = .beginning
-        
+
+    @Published var searchMode: SearchMode = .beginning {
+        didSet { reFilter() }
+    }
+    @Published var sortOrder: SortOrder = .az {
+        didSet { reFilter() }
+    }
+
     @Published var allIdioms: [Idiom] = []
     @Published var filteredIdioms: [Idiom] = []
-    
+
     @Published var allProverbs: [Proverb] = []
     @Published var filteredProverbs: [Proverb] = []
-    
+
     @Published var allSayings: [Saying] = []
     @Published var filteredSayings: [Saying] = []
-    
+
     @Published var allWords: [Word] = []
     @Published var filteredWords: [Word] = []
-    
+
     @Published var uiState: UiState = .idle
-    @Published var homeTab: HomeTab = .words
-    
+    @Published var homeTab: HomeTab = .all
+
+    private var lastQuery: String = ""
+
     init(
         prefsRepo: PrefsRepo,
         idiomRepo: IdiomRepoProtocol,
@@ -50,9 +56,8 @@ final class SearchViewModel: ObservableObject {
         self.sayingRepo = sayingRepo
         self.wordRepo = wordRepo
     }
-    
+
     func fetchData() {
-        print("Fetching data")
         self.uiState = .loading("Inapakia data ...")
 
         Task { @MainActor in
@@ -60,55 +65,73 @@ final class SearchViewModel: ObservableObject {
             self.allProverbs = proverbRepo.fetchLocalData()
             self.allSayings = sayingRepo.fetchLocalData()
             self.allWords = wordRepo.fetchLocalData()
-            
+
             self.filterData(qry: "")
             self.uiState = .filtered
         }
     }
-    
-    func filterData(qry: String) {
-        let trimmedQuery = qry.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-        
-        self.uiState = .filtering
-        
-        switch self.homeTab {
-        case .idioms:
-            self.filteredIdioms = filterItems(items: allIdioms, query: trimmedQuery)
-        case .sayings:
-            self.filteredSayings = filterItems(items: allSayings, query: trimmedQuery)
-        case .proverbs:
-            self.filteredProverbs = filterItems(items: allProverbs, query: trimmedQuery)
-        case .words:
-            self.filteredWords = filterItems(items: allWords, query: trimmedQuery)
+
+    /// Total result count across whichever type(s) are currently selected —
+    /// mirrors Android's `totalResults` computation in AdvancedSearchScreen.
+    func totalResults(for tab: HomeTab) -> Int {
+        switch tab {
+        case .words: return filteredWords.count
+        case .idioms: return filteredIdioms.count
+        case .proverbs: return filteredProverbs.count
+        case .sayings: return filteredSayings.count
+        case .all:
+            return filteredWords.count + filteredIdioms.count + filteredProverbs.count + filteredSayings.count
         }
-        
+    }
+
+    private func reFilter() {
+        filterData(qry: lastQuery)
+    }
+
+    /// Filters and sorts all four content types at once, regardless of the
+    /// currently selected type filter — matching Android's
+    /// `filterData(query, sortOrder, searchMode)`, where `selectedType` only
+    /// controls which sections are *displayed*, not what gets filtered.
+    func filterData(qry: String) {
+        lastQuery = qry
+        let trimmedQuery = qry.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+
+        self.uiState = .filtering
+
+        self.filteredWords = filterAndSort(allWords, query: trimmedQuery)
+        self.filteredIdioms = filterAndSort(allIdioms, query: trimmedQuery)
+        self.filteredProverbs = filterAndSort(allProverbs, query: trimmedQuery)
+        self.filteredSayings = filterAndSort(allSayings, query: trimmedQuery)
+
         self.uiState = .filtered
     }
-    
-    private func filterItems<T: SearchableItem>(items: [T], query: String) -> [T] {
-        guard !query.isEmpty else { return items }
-        
-        return items.filter { item in
-            let searchText: String
-            
-            switch searchPart {
-            case .byTitle:
-                searchText = item.title.lowercased()
-            case .byMeaning:
-                if let meanings = item.meanings {
-                    searchText = meanings.joined(separator: " ").lowercased()
-                } else {
-                    searchText = item.title.lowercased()
+
+    private func filterAndSort<T: SearchableItem>(_ items: [T], query: String) -> [T] {
+        let filtered: [T]
+        if query.isEmpty {
+            filtered = items
+        } else {
+            filtered = items.filter { item in
+                item.searchFields.contains { field in
+                    let value = field.lowercased()
+                    switch searchMode {
+                    case .beginning: return value.hasPrefix(query)
+                    case .middle: return value.contains(query)
+                    case .end: return value.hasSuffix(query)
+                    }
                 }
             }
-            
-            switch searchPattern {
-            case .beginning:
-                return searchText.hasPrefix(query)
-            case .middle:
-                return searchText.contains(query)
-            case .end:
-                return searchText.hasSuffix(query)
+        }
+
+        switch sortOrder {
+        case .az:
+            return filtered.sorted { $0.title.lowercased() < $1.title.lowercased() }
+        case .za:
+            return filtered.sorted { $0.title.lowercased() > $1.title.lowercased() }
+        case .likedFirst:
+            return filtered.sorted { lhs, rhs in
+                if lhs.liked != rhs.liked { return lhs.liked && !rhs.liked }
+                return lhs.title.lowercased() < rhs.title.lowercased()
             }
         }
     }
@@ -116,29 +139,25 @@ final class SearchViewModel: ObservableObject {
 
 protocol SearchableItem {
     var title: String { get }
-    var meanings: [String]? { get }
-}
-
-extension Idiom: SearchableItem {
-    var meanings: [String]? {
-        return []
-    }
-}
-
-extension Proverb: SearchableItem {
-    var meanings: [String]? {
-        return []
-    }
-}
-
-extension Saying: SearchableItem {
-    var meanings: [String]? {
-        return []
-    }
+    var liked: Bool { get }
+    /// Every field that should be matched against the search query for this
+    /// type — mirrors the field lists Android passes into `matchStart` /
+    /// `matchContains` / `matchEnd` for each entity.
+    var searchFields: [String] { get }
 }
 
 extension Word: SearchableItem {
-    var meanings: [String]? {
-        return []
-    }
+    var searchFields: [String] { [title, meaning, synonyms, conjugation, english] }
+}
+
+extension Idiom: SearchableItem {
+    var searchFields: [String] { [title, meaning] }
+}
+
+extension Proverb: SearchableItem {
+    var searchFields: [String] { [title, meaning, synonyms, conjugation] }
+}
+
+extension Saying: SearchableItem {
+    var searchFields: [String] { [title, meaning] }
 }

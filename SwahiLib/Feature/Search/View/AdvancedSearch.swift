@@ -32,7 +32,7 @@ struct AdvancedSearch: View {
             
         case .filtered:
             AdvancedSearchView(viewModel: viewModel)
-                .alert("Kipengele hiki cha PRO",
+                .alert("Kipengele hiki ni cha PRO",
                        isPresented: $viewModel.showAlertDialog
                 ) {
                     proLimitAlertButtons

@@ -5,10 +5,6 @@
 
 import SwiftUI
 
-/// Floating action button that opens Advanced Search.
-/// Mirrors Android's `ExtendedFloatingActionButton`: shows icon + label
-/// while at the top of the list, and collapses to an icon-only pill once
-/// the user scrolls down.
 struct AdvancedSearchFAB: View {
     var expanded: Bool
 
@@ -21,7 +17,7 @@ struct AdvancedSearchFAB: View {
                     .font(.system(size: 20, weight: .semibold))
 
                 if expanded {
-                    Text("TAFUTA KWA KINA")
+                    Text("Tafuta kwa Kina")
                         .font(.system(size: 14, weight: .bold))
                         .lineLimit(1)
                         .fixedSize(horizontal: true, vertical: false)
