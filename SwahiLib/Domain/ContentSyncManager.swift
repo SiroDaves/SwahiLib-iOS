@@ -46,6 +46,13 @@ final class ContentSyncManager: ContentSyncManagerProtocol {
     }
 
     func syncAll() async {
+        do {
+            try await CoreDataManager.shared.ensureLoaded()
+        } catch {
+            print("❌ Core Data failed to load — skipping sync this launch: \(error.localizedDescription)")
+            return
+        }
+
         await withTaskGroup(of: Void.self) { group in
             for endpoint in KamusiEndpoint.allCases {
                 group.addTask { await self.syncEndpoint(endpoint) }
