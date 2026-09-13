@@ -17,12 +17,14 @@ struct MeaningsView: View {
                 let maana = parts.first ?? ""
                 let mfano = parts.count > 1 ? parts[1] : nil
 
-                CardView(
-                    maana: maana,
-                    mfano: mfano,
-                    index: index,
-                    total: meanings.count
-                )
+                if !maana.isEmpty {
+                    CardView(
+                        maana: maana,
+                        mfano: mfano,
+                        index: index,
+                        total: meanings.count
+                    )
+                }
             }
         }
         .padding(.horizontal, 10)

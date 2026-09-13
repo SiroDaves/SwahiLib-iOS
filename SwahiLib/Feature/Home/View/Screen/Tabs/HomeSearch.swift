@@ -15,72 +15,92 @@ struct HomeSearch: View {
     @State private var isSearching: Bool = true
     @State private var showPaywall: Bool = false
     @State private var scrollViewProxy: ScrollViewProxy? = nil
+    @State private var isAtTop: Bool = true
+
+    private let scrollSpace = "homeSearchScroll"
 
     var body: some View {
         NavigationStack {
-            ZStack(alignment: .bottomTrailing) {
-                ScrollViewReader { proxy in
-                    ScrollView {
-                        VStack(alignment: .leading, spacing: 12) {
-                            Color.clear
-                                .frame(height: 0)
-                                .id("top")
-                            
-                            HStack {
-                                SearchBar(
-                                    text: $searchText,
-                                    onSearch: { query in
-                                        viewModel.filterData(qry: query)
-                                    }
-                                )
-                                NavigationLink {
-                                    AdvancedSearch()
-                                } label: {
-                                    Text("TAFUTA KWA KINA")
-                                        .font(.headline)
-                                        .padding(.vertical, 5)
-                                }
-                                .buttonStyle(.borderedProminent)
-                            }
-                            .padding(.horizontal, 10)
-                            
-                            CustomTabTitles(
-                                selectedTab: viewModel.homeTab,
-                                onSelect: { homeTab in
-                                    viewModel.homeTab = homeTab
-                                    viewModel.filterData(qry: "")
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                        scrollToTop()
-                                    }
-                                }
-                            )
-                            .padding(.leading, 10)
+            VStack(spacing: 0) {
+                SearchBar(
+                    text: $searchText,
+                    onSearch: { query in
+                        viewModel.filterData(qry: query)
+                    }
+                )
+                .padding(.horizontal, 10)
+                .padding(.top, 8)
 
-                            HomeSearchView(
-                                viewModel: viewModel,
-                                selectedLetter: $selectedLetter
+                CustomTabTitles(
+                    selectedTab: viewModel.homeTab,
+                    onSelect: { homeTab in
+                        viewModel.homeTab = homeTab
+                        viewModel.filterData(qry: "")
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            scrollToTop()
+                        }
+                    }
+                )
+                .padding(.leading, 10)
+                .padding(.top, 8)
+
+                ZStack(alignment: .bottomTrailing) {
+                    HStack(alignment: .top, spacing: 10) {
+                        if viewModel.isProUser {
+                            VerticalLetters(
+                                selectedLetter: selectedLetter,
+                                onLetterSelected: { letter in
+                                    selectedLetter = letter
+                                    viewModel.filterData(qry: letter)
+                                }
                             )
+                            .frame(width: 60)
+                            .padding(.top, 12)
                         }
-                        .onAppear {
-                            self.scrollViewProxy = proxy
-                        }
-                        .onChange(of: viewModel.homeTab) { _ in
-                            if scrollViewProxy == nil {
-                                self.scrollViewProxy = proxy
+
+                        ScrollViewReader { proxy in
+                            ScrollView {
+                                VStack(alignment: .leading, spacing: 12) {
+                                    Color.clear
+                                        .frame(height: 0)
+                                        .id("top")
+                                        .trackScrollOffset(coordinateSpace: scrollSpace) { offset in
+                                            isAtTop = offset >= -5
+                                        }
+
+                                    HomeResultsList(viewModel: viewModel)
+                                }
+                                .onAppear {
+                                    self.scrollViewProxy = proxy
+                                }
+                                .onChange(of: viewModel.homeTab) { _ in
+                                    if scrollViewProxy == nil {
+                                        self.scrollViewProxy = proxy
+                                    }
+                                }
                             }
+                            .coordinateSpace(name: scrollSpace)
                         }
                     }
-                }
-                
-                ScrollToTopButton {
-                    withAnimation {
-                        scrollToTop()
+
+                    VStack(alignment: .trailing, spacing: 10) {
+                        if !isAtTop {
+                            ScrollToTopButton {
+                                withAnimation {
+                                    scrollToTop()
+                                }
+                            }
+                            .transition(.opacity)
+                        }
+
+                        AdvancedSearchFAB(expanded: isAtTop)
                     }
-                }
-                .padding()
-                
-                if !viewModel.isProUser {
-                    UpgradeBanner1 { showPaywall = true }
+                    .animation(.easeInOut(duration: 0.2), value: isAtTop)
+                    .padding()
+
+                    if !viewModel.isProUser {
+                        UpgradeBanner1 { showPaywall = true }
+                    }
                 }
             }
             .sheet(isPresented: $showPaywall) {
@@ -88,6 +108,15 @@ struct HomeSearch: View {
             }
             .navigationTitle("SwahiLib")
             .toolbarBackground(.regularMaterial, for: .navigationBar)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    NavigationLink {
+                        HomeLikes(viewModel: viewModel)
+                    } label: {
+                        Image(systemName: "heart.fill")
+                    }
+                }
+            }
         }
     }
     
@@ -98,39 +127,28 @@ struct HomeSearch: View {
     }
 }
 
-struct HomeSearchView: View {
+struct HomeResultsList: View {
     @ObservedObject var viewModel: HomeViewModel
-    @Binding var selectedLetter: String?
 
     var body: some View {
-        HStack(alignment: .top, spacing: 10) {
-            if viewModel.isProUser {
-                VerticalLetters(
-                    selectedLetter: selectedLetter,
-                    onLetterSelected: { letter in
-                        selectedLetter = letter
-                        viewModel.filterData(qry: letter)
-                    }
-                )
-                .frame(width: 60)
-            }
+        switch viewModel.homeTab {
+            case .all:
+                EmptyView()
 
-            switch viewModel.homeTab {
-                case .idioms:
-                    IdiomsList(idioms: viewModel.filteredIdioms)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                
-                case .proverbs:
-                    ProverbsList(proverbs: viewModel.filteredProverbs)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                case .sayings:
-                    SayingsList(sayings: viewModel.filteredSayings)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                
-                case .words:
-                    WordsList(words: viewModel.filteredWords)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-            }
+            case .idioms:
+                IdiomsList(idioms: viewModel.filteredIdioms)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+            case .proverbs:
+                ProverbsList(proverbs: viewModel.filteredProverbs)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            case .sayings:
+                SayingsList(sayings: viewModel.filteredSayings)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+            case .words:
+                WordsList(words: viewModel.filteredWords)
+                    .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 }

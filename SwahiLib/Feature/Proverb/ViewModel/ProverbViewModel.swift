@@ -77,7 +77,7 @@ class ProverbViewModel: ObservableObject {
     func shareText(proverb: Proverb) -> String {
         let parts = cleanText(
             proverb.meaning.trimmingCharacters(in: .whitespacesAndNewlines)
-        ).components(separatedBy: "|")
+        ).components(separatedBy: "#")
         
         let meaningsList: String
         if parts.count > 1 {

@@ -27,13 +27,12 @@ struct AdvancedSearch: View {
         switch viewModel.uiState {
         case .loading:
             LoadingState(
-                title: "Inapakia data ...",
-                fileName: "opener-loading"
+                title: "Inapakia data ..."
             )
             
         case .filtered:
             AdvancedSearchView(viewModel: viewModel)
-                .alert("Kipengele hiki cha PRO",
+                .alert("Kipengele hiki ni cha PRO",
                        isPresented: $viewModel.showAlertDialog
                 ) {
                     proLimitAlertButtons
@@ -53,8 +52,7 @@ struct AdvancedSearch: View {
             
         default:
             LoadingState(
-                title: "Inapakia data ...",
-                fileName: "circle-loader"
+                title: "Inapakia data ..."
             )
         }
     }

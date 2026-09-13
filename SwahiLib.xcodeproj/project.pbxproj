@@ -8,8 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		173314E42DC159DB00318DD8 /* Swinject in Frameworks */ = {isa = PBXBuildFile; productRef = 173314E32DC159DB00318DD8 /* Swinject */; };
-		173B62752E0977B200454071 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 173B62742E0977B200454071 /* Lottie */; };
-		173B62782E0977DB00454071 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 173B62772E0977DB00454071 /* Supabase */; };
 		173CEE452E06AA5900DB2FE1 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 173CEE442E06AA5200DB2FE1 /* .gitignore */; };
 		1745C2F02EABBE6C0011EF91 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1745C2992EABB7B30011EF91 /* WidgetKit.framework */; };
 		1745C2F12EABBE6C0011EF91 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1745C29B2EABB7B30011EF91 /* SwiftUI.framework */; };
@@ -143,9 +141,7 @@
 			files = (
 				17B82D082E59025700C58824 /* RevenueCat in Frameworks */,
 				173314E42DC159DB00318DD8 /* Swinject in Frameworks */,
-				173B62752E0977B200454071 /* Lottie in Frameworks */,
 				17B82D0D2E5909C200C58824 /* RevenueCatUI in Frameworks */,
-				173B62782E0977DB00454071 /* Supabase in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -248,8 +244,6 @@
 			name = SwahiLib;
 			packageProductDependencies = (
 				173314E32DC159DB00318DD8 /* Swinject */,
-				173B62742E0977B200454071 /* Lottie */,
-				173B62772E0977DB00454071 /* Supabase */,
 				17B82D072E59025700C58824 /* RevenueCat */,
 				17B82D0C2E5909C200C58824 /* RevenueCatUI */,
 			);
@@ -340,8 +334,6 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				1733149D2DC1499100318DD8 /* XCRemoteSwiftPackageReference "Swinject" */,
-				173B62732E09774B00454071 /* XCRemoteSwiftPackageReference "lottie-ios" */,
-				173B62762E0977CB00454071 /* XCRemoteSwiftPackageReference "supabase-swift" */,
 				175222CE2E58CF5100A2AD93 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -639,7 +631,7 @@
 				CODE_SIGN_ENTITLEMENTS = SwahiLib/SwahiLibDebug.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 142;
+				CURRENT_PROJECT_VERSION = 145;
 				DEVELOPMENT_TEAM = Q7CNPE587D;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -656,7 +648,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.142;
+				MARKETING_VERSION = 1.0.145;
 				PRODUCT_BUNDLE_IDENTIFIER = com.swahilib.stg;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -679,7 +671,7 @@
 				CODE_SIGN_ENTITLEMENTS = SwahiLib/SwahiLib.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 142;
+				CURRENT_PROJECT_VERSION = 145;
 				DEVELOPMENT_TEAM = Q7CNPE587D;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -696,7 +688,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.142;
+				MARKETING_VERSION = 1.0.145;
 				PRODUCT_BUNDLE_IDENTIFIER = com.swahilib;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -841,22 +833,6 @@
 				minimumVersion = 2.9.1;
 			};
 		};
-		173B62732E09774B00454071 /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/airbnb/lottie-ios.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 4.5.2;
-			};
-		};
-		173B62762E0977CB00454071 /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/supabase/supabase-swift.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.5.1;
-			};
-		};
 		175222CE2E58CF5100A2AD93 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/RevenueCat/purchases-ios-spm.git";
@@ -872,16 +848,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 1733149D2DC1499100318DD8 /* XCRemoteSwiftPackageReference "Swinject" */;
 			productName = Swinject;
-		};
-		173B62742E0977B200454071 /* Lottie */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 173B62732E09774B00454071 /* XCRemoteSwiftPackageReference "lottie-ios" */;
-			productName = Lottie;
-		};
-		173B62772E0977DB00454071 /* Supabase */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 173B62762E0977CB00454071 /* XCRemoteSwiftPackageReference "supabase-swift" */;
-			productName = Supabase;
 		};
 		17B82D072E59025700C58824 /* RevenueCat */ = {
 			isa = XCSwiftPackageProductDependency;

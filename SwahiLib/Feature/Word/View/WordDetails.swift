@@ -14,6 +14,7 @@ struct WordDetails: View {
     var synonyms: [Word]
     var conjugation: String
     var proverbs: [Proverb]
+    var english: String?
     var onFeatureLocked: () -> Void
     
     private enum Constants {
@@ -28,7 +29,7 @@ struct WordDetails: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 10) {
-                CollapsingHeader(title: title)
+                CollapsingHeader(title: title, subtitle: english)
 
                 if !meanings.isEmpty {
                     Text("MAANA \(meanings.count)")

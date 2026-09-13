@@ -17,12 +17,14 @@ struct ProverbMeaning: View {
                 let maana = parts.first ?? ""
                 let maelezo = parts.count > 1 ? parts[1] : nil
 
-                ProverbCardView(
-                    maana: maana,
-                    maelezo: maelezo,
-                    index: index,
-                    total: meanings.count
-                )
+                if !maana.isEmpty {
+                    ProverbCardView(
+                        maana: maana,
+                        maelezo: maelezo,
+                        index: index,
+                        total: meanings.count
+                    )
+                }
             }
         }
         .padding(.horizontal, 10)

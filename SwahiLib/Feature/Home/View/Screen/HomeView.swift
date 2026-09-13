@@ -13,6 +13,10 @@ struct HomeView: View {
         DiContainer.shared.resolve(HomeViewModel.self)
     }()
     
+    @StateObject private var libraryViewModel: LibraryViewModel = {
+        DiContainer.shared.resolve(LibraryViewModel.self)
+    }()
+    
     private enum ActiveSheet: Identifiable {
         case parentalGate
         case paywall
@@ -59,9 +63,7 @@ struct HomeView: View {
     private var stateContent: some View {
         switch viewModel.uiState {
             case .loading:
-                LoadingState(
-                    fileName: "circle-loader"
-                )
+                HomeSkeleton()
                 
             case .filtered:
                 TabView {
@@ -70,9 +72,9 @@ struct HomeView: View {
                             Label("Tafuta", systemImage: "magnifyingglass")
                         }
                     
-                    HomeLikes(viewModel: viewModel)
+                    LibraryCollectionsView(viewModel: libraryViewModel)
                         .tabItem {
-                            Label("Vipendwa", systemImage: "heart.fill")
+                            Label("Maktaba", systemImage: "books.vertical.fill")
                         }
                     
                     SettingsView(viewModel: viewModel)
@@ -88,9 +90,7 @@ struct HomeView: View {
                 }
                 
             default:
-                LoadingState(
-                    fileName: "circle-loader"
-                )
+                HomeSkeleton()
         }
     }
 }
